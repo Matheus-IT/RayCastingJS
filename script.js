@@ -13,8 +13,6 @@ var background = new Vec3(0 / 255., 0 / 255., 0 / 255.);
 
 const get = e => document.querySelector(e); //obtém um elemento
 
-point_intersection = null;
-
 function updateScene() {
     restart();
     eval(textarea.value);
