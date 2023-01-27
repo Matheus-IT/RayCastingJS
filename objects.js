@@ -72,7 +72,9 @@ Vec3.prototype.show = function() {
 }
 
 //ids shape
-var sphere = 1;
+const sphere = 1;
+const cube = 2;
+
 
 function Camera(eye, at, up) {
     this.eye = eye;
@@ -119,16 +121,16 @@ Camera.prototype.lookAtInverse = function() {
     return lookAtInverseM(this.eye, this.at, this.up);
 }
 
-function Shape() {
-    this.geometry = sphere;
+function Shape({geometry}) {
+    this.geometry = geometry;
     this.name = "";
     this.translate = new Vec3(0, 0, 0);
     this.scale = new Vec3(0, 0, 0);
     this.rotate = new Vec3(0, 0, 0);
 }
 
-function Shape(name) {
-    this.geometry = sphere;
+function Shape({geometry, name}) {
+    this.geometry = geometry;
     this.name = name;
     this.translate = new Vec3(0, 0, 0);
     this.scale = new Vec3(0, 0, 0);

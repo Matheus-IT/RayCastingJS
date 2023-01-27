@@ -7,8 +7,9 @@ var aspect = canvas.width / canvas.height;
 var near = 0.1;
 var far = 1000.;
 var angle = 45;
+
 var stop = false;
-var objects = [];
+let objects = [];
 var background = new Vec3(0 / 255., 0 / 255., 0 / 255.);
 
 const get = e => document.querySelector(e); //obtém um elemento
@@ -71,7 +72,6 @@ async function calculateIntersection(ray, i, j) {
             var colorF = new Vec3(228 / 255., 44 / 255., 100 / 255.);
             ctx.fillStyle = "rgb(" + Math.min(colorF.x, 1) * 255 + "," + Math.min(colorF.y, 1) * 255 + "," + Math.min(colorF.z, 1) * 255 + ")";
             ctx.fillRect(i, j, 1, 1);
-
         }
     }
 
@@ -90,16 +90,16 @@ async function calculateIntersection(ray, i, j) {
 async function renderCanvas() {
     updateScene();
     stop = true;
-    max_rays = canvas.width * canvas.height;
-    actual_ray_count = 0;
+    const max_rays = canvas.width * canvas.height;
+    let actual_ray_count = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.beginPath();
-    hl = 2 * near * Math.tan(angle * Math.PI / 360.);
-    wl = hl * aspect;
+    const hl = 2 * near * Math.tan(angle * Math.PI / 360.);
+    const wl = hl * aspect;
 
-    deltaY = hl / canvas.height;
-    deltaX = wl / canvas.width;
+    const deltaY = hl / canvas.height;
+    const deltaX = wl / canvas.width;
 
     //TODO:coloque uma função para especificar a câmera via interface
     camera = new Camera();
@@ -109,29 +109,29 @@ async function renderCanvas() {
 
     await updateProgress(0);
 
-    for (var i = 0; i < canvas.width; i++) {
-        for (var j = 0; j < canvas.height; j++) {
-            var xc = -wl / 2 + deltaX / 2 + i * deltaX;
-            var yc = -(-hl / 2 + deltaY / 2 + j * deltaY);
-            var point = new Vec3(xc, yc, -near);
+    const origin = new Vec3(0, 0, 0); //origem de câmera
 
-            var o = new Vec3(0, 0, 0); //origem de câmera
-            var d = new Vec3(point.x, point.y, point.z);
-            ray = new Ray(o, d);
+    for (let i = 0; i < canvas.width; i++) {
+        for (let j = 0; j < canvas.height; j++) {
+            const xc = -wl / 2 + deltaX / 2 + i * deltaX;
+            const yc = -(-hl / 2 + deltaY / 2 + j * deltaY);
+            const point = new Vec3(xc, yc, -near);
+            const direction = new Vec3(point.x, point.y, point.z);
+
+            const ray = new Ray(origin, direction);
+            
             calculateIntersection(ray, i, j);
+
             actual_ray_count++;
             if ((i * j + 1) % ((canvas.width * canvas.height) / 50) == 0) {
                 console.log(actual_ray_count)
                 await updateProgress(actual_ray_count / max_rays * 100);
-                await sleep(100);
+                await sleep(1);
             }
-
-
         }
     }
-    await updateProgress(100);
+    await updateProgress(1);
     stop = false;
-
 }
 
 var save = document.getElementById("save");
