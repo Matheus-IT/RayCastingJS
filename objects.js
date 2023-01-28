@@ -323,7 +323,7 @@ Shape.prototype.testCubeIntersection = function(ray) {
 
 Shape.prototype.testCylinderIntersection = function(ray) {
     var a = Math.pow(ray.d.x, 2) + Math.pow(ray.d.z, 2);
-    var b = (2 * ray.o.x * ray.d.x) + (ray.o.z * ray.d.z);
+    var b = (2 * (ray.o.x * ray.d.x)) + (2 * (ray.o.z * ray.d.z));
     var c = Math.pow(ray.o.x, 2) + Math.pow(ray.o.z, 2) - 1;
     var delta = b * b - 4 * a * c;
     if (delta >= 0) {
@@ -337,6 +337,16 @@ Shape.prototype.testCylinderIntersection = function(ray) {
             return t;
         }
 
+        var normalTop = new Vec3(0, 1, 0);
+        var pointSampleTop = new Vec3(0, 0.5, 0);
+        const tTop = Vec.dot(Vec.minus(pointSampleTop, ray.o), normalTop) / dot(ray.d, normalTop);
+        const pointTop = ray.get(tTop);
+
+        const limitTop = ((Math.pow(pointTop.x, 2)) + (Math.pow(pointTop.z, 2))) <= 1;
+
+        if (limitTop) {
+            return tTop;
+        }
     }
     return undefined;
 }
