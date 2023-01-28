@@ -334,21 +334,32 @@ Shape.prototype.testCylinderIntersection = function(ray) {
         const point = sum(ray.o, prod(ray.d, t));
 
         if (point.y >= -0.5 && point.y <= 0.5) {
-            return t;
+            return {t: t, normal: point};
         }
 
-        var normalTop = new Vec3(0, 1, 0);
-        var pointSampleTop = new Vec3(0, 0.5, 0);
+        const normalTop = new Vec3(0, 1, 0);
+        const pointSampleTop = new Vec3(0, 0.5, 0);
         const tTop = Vec.dot(Vec.minus(pointSampleTop, ray.o), normalTop) / dot(ray.d, normalTop);
         const pointTop = ray.get(tTop);
 
         const limitTop = ((Math.pow(pointTop.x, 2)) + (Math.pow(pointTop.z, 2))) <= 1;
 
         if (limitTop) {
-            return tTop;
+            return {t:tTop, normal: normalTop};
+        }
+        
+        const normalBottom = new Vec3(0, -1, 0);
+        const pointSampleBottom = new Vec3(0, -0.5, 0);
+        const tBottom = Vec.dot(Vec.minus(pointSampleBottom, ray.o), normalBottom) / dot(ray.d, normalBottom);
+        const pointBottom = ray.get(tBottom);
+
+        const limitBottom = ((Math.pow(pointBottom.x, 2)) + (Math.pow(pointBottom.z, 2))) <= 1;
+
+        if (limitBottom) {
+            return {t:tBottom, normal: normalBottom};
         }
     }
-    return undefined;
+    return {t:undefined};
 }
 
 Shape.prototype.getDataIntersection = function(ray_w, normal, point) {
@@ -410,10 +421,9 @@ Shape.prototype.testIntersectionRay = function(ray) {
     }
 
     if (this.geometry === cylinder) {
-        const t = this.testCylinderIntersection(ray);
+        const {t, normal} = this.testCylinderIntersection(ray);
         if (t !== undefined) {
             var point = ray.get(t);
-            var normal = new Vec3(0, 1, 0);
             return this.getDataIntersection(ray_w, normal, point);
         }
     }
