@@ -14,6 +14,27 @@ var background = new Vec3(0 / 255., 0 / 255., 0 / 255.);
 
 const get = e => document.querySelector(e); //obtém um elemento
 
+point_intersection = null;
+
+//TODO:coloque uma função para especificar a câmera via interface
+var camera = new Camera();
+camera.eye = new Vec3(0, 0, 15.);
+camera.at = new Vec3(0, 0, 0);
+camera.up = new Vec3(0, 1., 0);
+
+function setCamera(_eye = new Vec3(0, 0, 15.), _at = new Vec3(0, 0, 0), _up = new Vec3(0, 1., 0)) {
+    camera.eye = _eye;
+    camera.at = _at;
+    camera.up = _up;
+}
+
+/* new function */
+function setProjection(_angle = 45, _near = 0.1, _far = 1000) {
+    near = _near;
+    far = _far;
+    angle = _angle;
+}
+
 function updateScene() {
     restart();
     eval(textarea.value);
@@ -49,10 +70,6 @@ async function updateProgress(percent) {
     }
 }
 
-//TODO:coloque uma função para especificar a projeção
-
-
-
 textarea.addEventListener("input", updateScene());
 
 async function calculateIntersection(ray, i, j) {
@@ -69,8 +86,9 @@ async function calculateIntersection(ray, i, j) {
             var normal = result[2];
             var viewer = camera.eye;
             //TODO: fazer o cálculo de phong e setar na variável colorF
-            var colorF = new Vec3(28 / 255., 144 / 255., 140 / 255.);
-            ctx.fillStyle = getFormattedRGB(colorF.x, colorF.y, colorF.z);
+            //var colorF = new Vec3(228 / 255., 44 / 255., 100 / 255.);
+            colorF = phongColor(position, normal, viewer);
+            ctx.fillStyle = "rgb(" + Math.min(colorF.x, 1) * 255 + "," + Math.min(colorF.y, 1) * 255 + "," + Math.min(colorF.z, 1) * 255 + ")";
             ctx.fillRect(i, j, 1, 1);
         }
     }
@@ -104,11 +122,6 @@ async function renderCanvas() {
     const deltaY = hl / canvas.height;
     const deltaX = wl / canvas.width;
 
-    //TODO:coloque uma função para especificar a câmera via interface
-    camera = new Camera();
-    camera.eye = new Vec3(0, 0, 15.);
-    camera.at = new Vec3(0, 0, 0);
-    camera.up = new Vec3(0, 1., 0);
 
     await updateProgress(0);
 

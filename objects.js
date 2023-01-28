@@ -109,10 +109,8 @@ function unitary(p) {
 }
 
 //ids shape
-const sphere = 1;
-const cube = 2;
-const plane = 3;
-
+var sphere = 1;
+var plane = 2;
 
 function Camera(eye, at, up) {
     this.eye = eye;
@@ -159,16 +157,8 @@ Camera.prototype.lookAtInverse = function() {
     return lookAtInverseM(this.eye, this.at, this.up);
 }
 
-function Shape({geometry}) {
-    this.geometry = geometry;
-    this.name = "";
-    this.translate = new Vec3(0, 0, 0);
-    this.scale = new Vec3(0, 0, 0);
-    this.rotate = new Vec3(0, 0, 0);
-}
-
-function Shape({geometry, name}) {
-    this.geometry = geometry;
+function Shape({name='', type_shape=sphere}) {
+    this.geometry = type_shape;
     this.name = name;
     this.translate = new Vec3(0, 0, 0);
     this.scale = new Vec3(0, 0, 0);
@@ -224,6 +214,33 @@ Shape.prototype.transformMatrixVecInverse = function() {
     return multMatrix(Si, Ri);
 }
 
+Shape.prototype.testPlaneIntersection = function(ray) {
+    var Vec = new Vec3();
+    var n_plane = new Vec3(0, 1, 0);
+    var q_plane = new Vec3(0, 0, 0);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+        if ((point.x >= -0.5) && (point.x <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5)) {
+            return t;
+        }
+    }
+
+    return undefined;
+}
+
+Shape.prototype.getDataIntersection = function(ray_w, normal, point) {
+    var Vec = new Vec3();
+    var M = this.transformMatrix();
+    point = multVec4(M, point);
+    M = this.transformMatrixVec();
+    normal = multVec4(M, normal);
+    normal = Vec.unitary(normal);
+    var t_ = Vec.module(Vec.minus(point, ray_w.o));
+    return [true, point, normal, t_];
+}
+
 Shape.prototype.testIntersectionRay = function(ray) {
     //salvando raio em coordenadas do mundo para calcular o parâmetro t
     var ray_w = ray;
@@ -246,28 +263,18 @@ Shape.prototype.testIntersectionRay = function(ray) {
             var t1 = (-b + Math.sqrt(delta)) / (2 * a);
             var t2 = (-b - Math.sqrt(delta)) / (2 * a);
             t = Math.min(t1, t2);
-
             var point = ray.get(t);
             var normal = point;
-            var M = this.transformMatrix();
-            point = multVec4(M, point);
-            M = this.transformMatrixVec();
-            normal = multVec4(M, normal);
-            normal = vec.unitary(normal);
-            var t_ = vec.module(vec.minus(point, ray_w.o));
-            return [true, point, normal, t_];
+
+            return this.getDataIntersection(ray_w, normal, point)
         }
-    }
 
-    if (this.geometry === plane) {
-        // const M = this.transformMatrixVec();
-        const point = new Vec3(0, 0, 0);
-        const normal = new Vec3(0, 1, 0);
-        
-        const t = dot(minus(point, ray.o), normal) / dot(ray.d, normal);
-
-        if (t >= 0) {
-            return [true, point, normal, t];
+    } else if (this.geometry == plane) {
+        t = this.testPlaneIntersection(ray)
+        if (t !== undefined) {
+            var point = ray.get(t);
+            var normal = new Vec3(0, 1, 0);
+            return this.getDataIntersection(ray_w, normal, point)
         }
     }
 
