@@ -45,12 +45,15 @@ Vec3.prototype.minus = function(p1, p2) {
     return new Vec3(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
 }
 Vec3.prototype.dot = function(p1, p2) {
+    //produto escalar
     return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
 }
 Vec3.prototype.cross = function(p1, p2) {
+    //produto vetorial
     return new Vec3(p1.y * p2.z - p1.z * p2.y, -(p1.x * p2.z - p1.z * p2.x), p1.x * p2.y - p1.y * p2.x);
 }
 Vec3.prototype.module = function(p) {
+    //módulo
     return Math.sqrt(this.dot(p, p));
 }
 Vec3.prototype.div = function(p, k) {
@@ -71,9 +74,44 @@ Vec3.prototype.show = function() {
     console.log("x: " + this.x + ", y: " + this.y + ", z: " + this.z);
 }
 
+function dot(p1, p2) {
+    //produto escalar
+    return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
+}
+
+function sum(p1, p2) {
+    return new Vec3(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
+}
+
+function minus(p1, p2) {
+    return new Vec3(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
+}
+function cross(p1, p2) {
+    //produto vetorial
+    return new Vec3(p1.y * p2.z - p1.z * p2.y, -(p1.x * p2.z - p1.z * p2.x), p1.x * p2.y - p1.y * p2.x);
+}
+function module(p) {
+    //módulo
+    return Math.sqrt(this.dot(p, p));
+}
+function div(p, k) {
+    return new Vec3(p.x / k, p.y / k, p.z / k);
+}
+function prod(p, k) {
+    return new Vec3(p.x * k, p.y * k, p.z * k);
+}
+function compond(p, p0) {
+    return new Vec3(p.x * p0.x, p.y * p0.y, p.z * p0.z);
+}
+function unitary(p) {
+    var m = this.module(p);
+    return new Vec3(p.x / m, p.y / m, p.z / m);
+}
+
 //ids shape
 const sphere = 1;
 const cube = 2;
+const plane = 3;
 
 
 function Camera(eye, at, up) {
@@ -191,18 +229,18 @@ Shape.prototype.testIntersectionRay = function(ray) {
     var ray_w = ray;
     var M_i = this.transformMatrixInverse();
     var M_i_v = this.transformMatrixVecInverse();
-    var Vec = new Vec3();
+    const vec = new Vec3();
+
     //transformando raio para coordenadas locais do objeto
-    Vec = new Vec3();
-    ray.d = Vec.minus(ray.d, ray.o);
+    ray.d = vec.minus(ray.d, ray.o);
     ray.o = multVec4(M_i, ray.o);
     ray.d = multVec4(M_i_v, ray.d);
 
-    if (this.geometry == sphere) { //testar interseção com a esfera
+    if (this.geometry === sphere) { //testar interseção com a esfera
         //interseção com esfera na origem e raio unitário
-        var a = Vec.dot(ray.d, ray.d);
-        var b = 2 * (Vec.dot(ray.d, ray.o));
-        var c = Vec.dot(ray.o, ray.o) - 1;
+        var a = vec.dot(ray.d, ray.d);
+        var b = 2 * (vec.dot(ray.d, ray.o));
+        var c = vec.dot(ray.o, ray.o) - 1;
         var delta = b * b - 4 * a * c;
         if (delta >= 0) {
             var t1 = (-b + Math.sqrt(delta)) / (2 * a);
@@ -215,11 +253,23 @@ Shape.prototype.testIntersectionRay = function(ray) {
             point = multVec4(M, point);
             M = this.transformMatrixVec();
             normal = multVec4(M, normal);
-            normal = Vec.unitary(normal);
-            var t_ = Vec.module(Vec.minus(point, ray_w.o));
+            normal = vec.unitary(normal);
+            var t_ = vec.module(vec.minus(point, ray_w.o));
             return [true, point, normal, t_];
         }
-
     }
+
+    if (this.geometry === plane) {
+        // const M = this.transformMatrixVec();
+        const point = new Vec3(0, 0, 0);
+        const normal = new Vec3(0, 1, 0);
+        
+        const t = dot(minus(point, ray.o), normal) / dot(ray.d, normal);
+
+        if (t >= 0) {
+            return [true, point, normal, t];
+        }
+    }
+
     return [false, null];
 }

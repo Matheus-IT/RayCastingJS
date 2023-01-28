@@ -69,8 +69,8 @@ async function calculateIntersection(ray, i, j) {
             var normal = result[2];
             var viewer = camera.eye;
             //TODO: fazer o cálculo de phong e setar na variável colorF
-            var colorF = new Vec3(228 / 255., 44 / 255., 100 / 255.);
-            ctx.fillStyle = "rgb(" + Math.min(colorF.x, 1) * 255 + "," + Math.min(colorF.y, 1) * 255 + "," + Math.min(colorF.z, 1) * 255 + ")";
+            var colorF = new Vec3(28 / 255., 144 / 255., 140 / 255.);
+            ctx.fillStyle = getFormattedRGB(colorF.x, colorF.y, colorF.z);
             ctx.fillRect(i, j, 1, 1);
         }
     }
@@ -80,12 +80,15 @@ async function calculateIntersection(ray, i, j) {
         ctx.fillStyle = `rgb(${background.x},${background.y},${background.z})`;
         ctx.fillRect(i, j, 1, 1);
     }
-
-
-
 }
 
-
+function getFormattedRGB(x, y, z) {
+    return `rgb(
+        ${Math.min(x, 1) * 255},
+        ${Math.min(y, 1) * 255},
+        ${Math.min(z, 1) * 255}
+    )`;
+}
 
 async function renderCanvas() {
     updateScene();
@@ -113,9 +116,12 @@ async function renderCanvas() {
 
     for (let i = 0; i < canvas.width; i++) {
         for (let j = 0; j < canvas.height; j++) {
+            //calcula o centro do pixel
             const xc = -wl / 2 + deltaX / 2 + i * deltaX;
             const yc = -(-hl / 2 + deltaY / 2 + j * deltaY);
+            
             const point = new Vec3(xc, yc, -near);
+            
             const direction = new Vec3(point.x, point.y, point.z);
 
             const ray = new Ray(origin, direction);
@@ -129,8 +135,8 @@ async function renderCanvas() {
                 await sleep(1);
             }
         }
+        await updateProgress(1);
     }
-    await updateProgress(1);
     stop = false;
 }
 
