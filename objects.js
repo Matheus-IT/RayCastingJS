@@ -109,8 +109,9 @@ function unitary(p) {
 }
 
 //ids shape
-var sphere = 1;
-var plane = 2;
+const sphere = 1;
+const plane = 2;
+const cube = 3;
 
 function Camera(eye, at, up) {
     this.eye = eye;
@@ -230,6 +231,95 @@ Shape.prototype.testPlaneIntersection = function(ray) {
     return undefined;
 }
 
+Shape.prototype.testCubeIntersection = function(ray) {
+    var Vec = new Vec3();
+    var n_plane = new Vec3(0, 1, 0);
+    var q_plane = new Vec3(0, 0.5, 0);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+
+        const top = (point.x >= -0.5) && (point.x <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
+
+        if (top) {
+            return t;
+        }
+    }
+
+    var n_plane = new Vec3(0, -1, 0);
+    var q_plane = new Vec3(0, -0.5, 0);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+
+        const bottom = (point.x >= -0.5) && (point.x <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
+
+        if (bottom) {
+            return t;
+        }
+    }
+
+    var n_plane = new Vec3(-1, 0, 0);
+    var q_plane = new Vec3(-0.5, 0, 0);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+
+        const bottom = (point.y >= -0.5 && point.y <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
+
+        if (bottom) {
+            return t;
+        }
+    }
+
+    var n_plane = new Vec3(1, 0, 0);
+    var q_plane = new Vec3(0.5, 0, 0);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+
+        const bottom = (point.y >= -0.5 && point.y <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
+
+        if (bottom) {
+            return t;
+        }
+    }
+
+    var n_plane = new Vec3(0, 0, -1);
+    var q_plane = new Vec3(0, 0, -0.5);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+
+        const bottom = (point.x >= -0.5 && point.x <= 0.5) && (point.y >= -0.5 && point.y <= 0.5);
+
+        if (bottom) {
+            return t;
+        }
+    }
+    
+    var n_plane = new Vec3(0, 0, 1);
+    var q_plane = new Vec3(0, 0, 0.5);
+    var denominador = Vec.dot(n_plane, ray.d);
+    if (denominador != 0) {
+        t = Vec.dot(n_plane, Vec.minus(q_plane, ray.o)) / denominador;
+        var point = ray.get(t);
+
+        const bottom = (point.x >= -0.5 && point.x <= 0.5) && (point.y >= -0.5 && point.y <= 0.5);
+
+        if (bottom) {
+            return t;
+        }
+    }
+
+    return undefined;
+}
+
 Shape.prototype.getDataIntersection = function(ray_w, normal, point) {
     var Vec = new Vec3();
     var M = this.transformMatrix();
@@ -269,11 +359,22 @@ Shape.prototype.testIntersectionRay = function(ray) {
             return this.getDataIntersection(ray_w, normal, point)
         }
 
-    } else if (this.geometry == plane) {
+    }
+    
+    if (this.geometry === plane) {
         t = this.testPlaneIntersection(ray)
         if (t !== undefined) {
             var point = ray.get(t);
             var normal = new Vec3(0, 1, 0);
+            return this.getDataIntersection(ray_w, normal, point)
+        }
+    }
+
+    if (this.geometry === cube) {
+        const t = this.testCubeIntersection(ray)
+        if (t !== undefined) {
+            const point = ray.get(t);
+            const normal = new Vec3(0, 1, 0);
             return this.getDataIntersection(ray_w, normal, point)
         }
     }

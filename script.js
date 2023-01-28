@@ -95,7 +95,7 @@ async function calculateIntersection(ray, i, j) {
 
 
     if (!intercept) {
-        ctx.fillStyle = `rgb(${background.x},${background.y},${background.z})`;
+        ctx.fillStyle = `rgb(204,204,204)`;
         ctx.fillRect(i, j, 1, 1);
     }
 }
