@@ -112,6 +112,7 @@ function unitary(p) {
 const sphere = 1;
 const plane = 2;
 const cube = 3;
+const cylinder = 4;
 
 function Camera(eye, at, up) {
     this.eye = eye;
@@ -243,7 +244,7 @@ Shape.prototype.testCubeIntersection = function(ray) {
         const top = (point.x >= -0.5) && (point.x <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
 
         if (top) {
-            return t;
+            return {t, n_plane};
         }
     }
 
@@ -257,7 +258,7 @@ Shape.prototype.testCubeIntersection = function(ray) {
         const bottom = (point.x >= -0.5) && (point.x <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
 
         if (bottom) {
-            return t;
+            return {t, n_plane};
         }
     }
 
@@ -271,7 +272,7 @@ Shape.prototype.testCubeIntersection = function(ray) {
         const bottom = (point.y >= -0.5 && point.y <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
 
         if (bottom) {
-            return t;
+            return {t, n_plane};
         }
     }
 
@@ -285,7 +286,7 @@ Shape.prototype.testCubeIntersection = function(ray) {
         const bottom = (point.y >= -0.5 && point.y <= 0.5) && (point.z >= -0.5) && (point.z <= 0.5);
 
         if (bottom) {
-            return t;
+            return {t, n_plane};
         }
     }
 
@@ -299,7 +300,7 @@ Shape.prototype.testCubeIntersection = function(ray) {
         const bottom = (point.x >= -0.5 && point.x <= 0.5) && (point.y >= -0.5 && point.y <= 0.5);
 
         if (bottom) {
-            return t;
+            return {t, n_plane};
         }
     }
     
@@ -313,10 +314,30 @@ Shape.prototype.testCubeIntersection = function(ray) {
         const bottom = (point.x >= -0.5 && point.x <= 0.5) && (point.y >= -0.5 && point.y <= 0.5);
 
         if (bottom) {
-            return t;
+            return {t, n_plane};
         }
     }
 
+    return {t:undefined};
+}
+
+Shape.prototype.testCylinderIntersection = function(ray) {
+    var a = Math.pow(ray.d.x, 2) + Math.pow(ray.d.z, 2);
+    var b = (2 * ray.o.x * ray.d.x) + (ray.o.z * ray.d.z);
+    var c = Math.pow(ray.o.x, 2) + Math.pow(ray.o.z, 2) - 1;
+    var delta = b * b - 4 * a * c;
+    if (delta >= 0) {
+        var t1 = (-b + Math.sqrt(delta)) / (2 * a);
+        var t2 = (-b - Math.sqrt(delta)) / (2 * a);
+        const t = Math.min(t1, t2);
+
+        const point = sum(ray.o, prod(ray.d, t));
+
+        if (point.y >= -0.5 && point.y <= 0.5) {
+            return t;
+        }
+
+    }
     return undefined;
 }
 
@@ -371,11 +392,19 @@ Shape.prototype.testIntersectionRay = function(ray) {
     }
 
     if (this.geometry === cube) {
-        const t = this.testCubeIntersection(ray)
+        const {t, n_plane} = this.testCubeIntersection(ray)
         if (t !== undefined) {
             const point = ray.get(t);
-            const normal = new Vec3(0, 1, 0);
-            return this.getDataIntersection(ray_w, normal, point)
+            return this.getDataIntersection(ray_w, n_plane, point)
+        }
+    }
+
+    if (this.geometry === cylinder) {
+        const t = this.testCylinderIntersection(ray);
+        if (t !== undefined) {
+            var point = ray.get(t);
+            var normal = new Vec3(0, 1, 0);
+            return this.getDataIntersection(ray_w, normal, point);
         }
     }
 
