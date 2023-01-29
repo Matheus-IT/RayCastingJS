@@ -24,7 +24,10 @@
             <textarea id="code" class="playable-code">
 sizeWindow(500,500);
 setProjection(45,0.1,1000);
-setCamera(_eye = new Vec3(0,2,5));
+setCamera(new Vec3(0,2,5));
+setLight({
+    lightPosition: new Vec3(0, 5, 5),
+});
 
 //const s1 = new Shape({type_shape:2});
 //s1.setTranslate(0, -0.55, 0);

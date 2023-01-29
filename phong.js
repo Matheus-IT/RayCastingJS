@@ -21,12 +21,29 @@ gl_FragColor = vec4(Ka * ambientColor +
 
 */
 
-function phongColor(_position_obj, _normal_obj, _position_viewer, light = undefined, object = undefined) {
+const light = {
+    lightPosition: undefined,
+    lightAmb: undefined,
+    lightDif: undefined,
+    lightSpe: undefined,
+};
+
+function setLight({lightPosition=new Vec3(0, 5, 0),
+                  lightAmb=new Vec3(.1, .1, .1),
+                  lightDif=new Vec3(.8, .8, .8),
+                  lightSpe=new Vec3(0, 0, 0)}) {
+    light.lightPosition = lightPosition;
+    light.lightAmb = lightAmb;
+    light.lightDif = lightDif;
+    light.lightSpe = lightSpe;
+}
+
+function phongColor(_position_obj, _normal_obj, _position_viewer, object = undefined) {
     /*parameters light*/
-    light_position = new Vec3(0, 5, 0);
-    light_amb = new Vec3(.1, .1, .1);
-    light_dif = new Vec3(.8, .8, .8);
-    light_spe = new Vec3(0, 0, 0);
+    light_position = light.lightPosition;
+    light_amb = light.lightAmb;
+    light_dif = light.lightDif;
+    light_spe = light.lightSpe;
 
     /*paramenters object */
     object_amb = new Vec3(.1, .1, .1);
