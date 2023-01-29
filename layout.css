@@ -1,10 +1,21 @@
 .playable-buttons {
-    padding-bottom: 5px;
-    padding-left: 26px;
-    padding-right: 10px;
-    padding-top: 5px;
-    text-align: right;
+    text-align: center;
+    padding: 1em;
     width: 100%;
+}
+.playable-buttons button, .playable-buttons input {
+    background-color: rgb(163, 36, 163);
+    color: white;
+    cursor: pointer;
+    width: 8em;
+    padding: 0.6em 0.8em;
+    border-radius: 0.6em;
+    border: none;
+}
+
+.playable-buttons button:hover,
+.playable-buttons input:hover {
+    filter: brightness(90%);
 }
 
 .playable-canvas {
@@ -41,7 +52,7 @@
     border-image-slice: 100%;
     border-image-source: none;
     border-image-width: 1;
-    border-left-color: rgb(85, 138, 187);
+    border-left-color: rgb(133, 34, 133);
     border-left-style: solid;
     border-left-width: 6px;
     border-right-color: rgb(77, 78, 83);
@@ -51,7 +62,7 @@
     border-top-style: none;
     border-top-width: 0px;
     color: rgb(77, 78, 83);
-    height: 100%;
+    height: 37.6em;
     padding-bottom: 0px;
     padding-left: 10px;
     padding-right: 10px;
@@ -71,6 +82,7 @@
 }
 
 .main {
+    margin-top: 4em;
     padding: 20px;
     float: left;
     width: 60%;
@@ -78,7 +90,6 @@
 }
 
 .right {
-    background-color: #4CAF50;
     padding: 20px;
     float: left;
     width: 20%;
