@@ -29,20 +29,26 @@ setLight({
     lightPosition: new Vec3(0, 5, 5),
 });
 
-//const s1 = new Shape({type_shape:2});
-//s1.setTranslate(0, -0.55, 0);
-//s1.setScale(3, 3, 3);
-//addObject(s1);
-//
-//const s2 = new Shape({type_shape:3});
-//s2.setTranslate(0, 0, -3);
-//s2.setScale(2, 2, 2);
-//addObject(s2);
-//
-const s3 = new Shape({type_shape:4});
-s3.setTranslate(0, 0, -3);
-s3.setScale(2, 2, 2);
+const s1 = new Shape({name: 'plane', type_shape:2});
+s1.setTranslate(0, -0.55, 0);
+s1.setScale(3, 3, 3);
+addObject(s1);
+
+const s2 = new Shape({name: 'cube', type_shape:3});
+s2.setTranslate(0, 0, 0);
+s2.setScale(1, 1, 1);
+addObject(s2);
+
+const s3 = new Shape({name: 'cylinder', type_shape:4});
+s3.setTranslate(-1.8, -0.4, -2);
+s3.setRotateZ(20);
+s3.setScale(0.8, 2, 0.8);
 addObject(s3);
+
+const s4 = new Shape({name: 'sphere', type_shape:1});
+s4.setTranslate(1.8, 0, -2);
+s4.setScale(0.8, 0.8, 0.8);
+addObject(s4);
             </textarea>
         </div>
 

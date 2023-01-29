@@ -143,7 +143,6 @@ async function renderCanvas() {
 
             actual_ray_count++;
             if ((i * j + 1) % ((canvas.width * canvas.height) / 50) == 0) {
-                console.log(actual_ray_count)
                 await updateProgress(actual_ray_count / max_rays * 100);
                 await sleep(1);
             }
